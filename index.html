@@ -6,456 +6,189 @@
 <title>Fatura Referans Arama</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --border: #2e3350;
-    --accent: #4f8ef7;
-    --accent2: #7c6af7;
-    --success: #3ecf8e;
-    --warn: #f7a74f;
-    --danger: #f76f6f;
-    --text: #e8eaf6;
-    --muted: #7b82aa;
-    --radius: 14px;
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+    --border: #2e3350; --accent: #4f8ef7; --accent2: #7c6af7;
+    --success: #3ecf8e; --warn: #f7a74f; --danger: #f76f6f;
+    --text: #e8eaf6; --muted: #7b82aa; --radius: 14px;
     --font: 'Segoe UI', system-ui, sans-serif;
   }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  header .logo {
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
-
-  header h1 { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; flex-direction: column; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
+  header .logo { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  header h1 { font-size: 17px; font-weight: 700; }
   header p { font-size: 12px; color: var(--muted); }
-
   main { flex: 1; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .step-badge { width: 22px; height: 22px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; }
 
-  /* SECTION CARDS */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 16px;
-  }
+  /* API KEY */
+  .apikey-box { display: flex; gap: 8px; }
+  .apikey-input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 13px; padding: 11px 14px; outline: none; transition: border-color 0.2s; }
+  .apikey-input:focus { border-color: var(--accent); }
+  .apikey-input::placeholder { color: var(--muted); }
+  .btn-save { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 11px 16px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .apikey-status { margin-top: 8px; font-size: 12px; }
+  .apikey-status.ok { color: var(--success); }
+  .apikey-status.err { color: var(--danger); }
+  .apikey-help { margin-top: 10px; font-size: 12px; color: var(--muted); line-height: 1.6; background: var(--surface2); border-radius: 8px; padding: 10px 12px; }
+  .apikey-help a { color: var(--accent); }
 
-  .card-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .step-badge {
-    width: 22px; height: 22px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; color: white;
-  }
-
-  /* UPLOAD ZONE */
-  .upload-zone {
-    border: 2px dashed var(--border);
-    border-radius: 10px;
-    padding: 28px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    position: relative;
-  }
-
-  .upload-zone:hover, .upload-zone.dragover {
-    border-color: var(--accent);
-    background: rgba(79,142,247,0.05);
-  }
-
-  .upload-zone input[type=file] {
-    position: absolute; inset: 0; opacity: 0; cursor: pointer;
-  }
-
+  /* UPLOAD */
+  .upload-zone { border: 2px dashed var(--border); border-radius: 10px; padding: 28px 20px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; position: relative; }
+  .upload-zone:hover { border-color: var(--accent); background: rgba(79,142,247,0.05); }
+  .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
   .upload-icon { font-size: 32px; margin-bottom: 8px; }
   .upload-zone p { color: var(--muted); font-size: 14px; }
   .upload-zone strong { color: var(--accent); }
-
-  /* PAGE LIST */
   .page-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
-
-  .page-item {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .page-thumb {
-    width: 42px; height: 42px;
-    border-radius: 6px;
-    object-fit: cover;
-    background: var(--border);
-    flex-shrink: 0;
-  }
-
+  .page-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
+  .page-thumb { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
   .page-info { flex: 1; min-width: 0; }
   .page-info .name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .page-info .status { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--muted); flex-shrink: 0;
-  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
   .status-dot.reading { background: var(--warn); animation: pulse 1s infinite; }
   .status-dot.done { background: var(--success); }
   .status-dot.error { background: var(--danger); }
-
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
-  .btn-remove {
-    background: none; border: none;
-    color: var(--muted); cursor: pointer;
-    font-size: 16px; padding: 4px;
-    border-radius: 6px;
-    transition: color 0.2s, background 0.2s;
-  }
-  .btn-remove:hover { color: var(--danger); background: rgba(247,111,111,0.1); }
-
-  /* READ ALL BUTTON */
-  .btn-primary {
-    width: 100%;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 14px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 14px;
-    transition: opacity 0.2s, transform 0.1s;
-  }
+  .btn-remove { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px; border-radius: 6px; transition: color 0.2s; }
+  .btn-remove:hover { color: var(--danger); }
+  .btn-primary { width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 14px; transition: opacity 0.2s; }
   .btn-primary:hover { opacity: 0.9; }
-  .btn-primary:active { transform: scale(0.98); }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ocr-preview { margin-top: 6px; background: var(--surface); border-radius: 6px; padding: 6px 10px; font-size: 11px; color: var(--muted); max-height: 60px; overflow: hidden; line-height: 1.5; }
 
-  /* SEARCH SECTION */
-  .search-row {
-    display: flex;
-    gap: 10px;
-  }
-
-  .search-input {
-    flex: 1;
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-size: 18px;
-    font-weight: 600;
-    padding: 13px 16px;
-    outline: none;
-    transition: border-color 0.2s;
-    letter-spacing: 1px;
-  }
-  .search-input::placeholder { color: var(--muted); font-weight: 400; letter-spacing: 0; font-size: 15px; }
+  /* SEARCH */
+  .search-row { display: flex; gap: 10px; }
+  .search-input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 18px; font-weight: 600; padding: 13px 16px; outline: none; transition: border-color 0.2s; letter-spacing: 1px; }
+  .search-input::placeholder { color: var(--muted); font-weight: 400; font-size: 15px; letter-spacing: 0; }
   .search-input:focus { border-color: var(--accent); }
-
-  .btn-search {
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 13px 18px;
-    font-size: 20px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-  .btn-search:hover { opacity: 0.85; }
+  .btn-search { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 13px 18px; font-size: 20px; cursor: pointer; }
+  .stats-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+  .stat-pill { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 6px 12px; font-size: 12px; color: var(--muted); }
+  .stat-pill strong { color: var(--text); }
+  .empty-state { text-align: center; padding: 32px 20px; color: var(--muted); }
+  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; line-height: 1.5; }
+  .history-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .history-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; color: var(--muted); }
+  .history-chip:hover { border-color: var(--accent); color: var(--text); }
 
   /* RESULTS */
-  .result-box {
-    margin-top: 16px;
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  .result-found {
-    background: rgba(62,207,142,0.08);
-    border: 1.5px solid rgba(62,207,142,0.3);
-    border-radius: 10px;
-    padding: 18px;
-  }
-
-  .result-found .result-header {
-    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
-  }
-
-  .result-found .result-header .icon {
-    font-size: 24px;
-  }
-
-  .result-found .result-header h3 {
-    font-size: 15px; font-weight: 700; color: var(--success);
-  }
-
+  .result-found { background: rgba(62,207,142,0.08); border: 1.5px solid rgba(62,207,142,0.3); border-radius: 10px; padding: 18px; margin-top: 16px; }
+  .result-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .result-header h3 { font-size: 15px; font-weight: 700; color: var(--success); }
   .result-locations { display: flex; flex-direction: column; gap: 8px; }
-
-  .location-item {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .location-badge {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: white;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 700;
-    text-align: center;
-    min-width: 80px;
-    flex-shrink: 0;
-  }
-
+  .location-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+  .location-badge { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; border-radius: 8px; padding: 8px 12px; text-align: center; min-width: 80px; flex-shrink: 0; }
   .location-badge .page-num { font-size: 11px; font-weight: 500; opacity: 0.8; }
   .location-badge .line-num { font-size: 20px; font-weight: 800; line-height: 1; }
-
   .location-detail { flex: 1; }
   .location-detail .ref-text { font-size: 14px; font-weight: 600; }
   .location-detail .context { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
-  .result-notfound {
-    background: rgba(247,111,111,0.08);
-    border: 1.5px solid rgba(247,111,111,0.3);
-    border-radius: 10px;
-    padding: 18px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--danger);
-  }
-
-  .result-notfound .icon { font-size: 24px; }
-  .result-notfound p { font-size: 14px; }
-  .result-notfound strong { font-weight: 700; }
-
-  /* STATS BAR */
-  .stats-bar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-
-  .stat-pill {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  .stat-pill strong { color: var(--text); }
-
-  /* EMPTY STATE */
-  .empty-state {
-    text-align: center;
-    padding: 32px 20px;
-    color: var(--muted);
-  }
-  .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
-  .empty-state p { font-size: 14px; line-height: 1.5; }
-
-  /* OCR DATA display */
-  .ocr-preview {
-    margin-top: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 12px;
-    color: var(--muted);
-    max-height: 80px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.5;
-  }
-
-  /* Loading spinner */
-  .spinner {
-    display: inline-block;
-    width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
-  }
+  .result-notfound { background: rgba(247,111,111,0.08); border: 1.5px solid rgba(247,111,111,0.3); border-radius: 10px; padding: 18px; display: flex; align-items: center; gap: 12px; color: var(--danger); margin-top: 16px; }
+  .highlight { background: rgba(247,167,79,0.25); color: var(--warn); border-radius: 3px; padding: 0 2px; font-weight: 700; }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.2); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* SEARCH HISTORY */
-  .history-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .history-chip {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 5px 12px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    color: var(--muted);
-  }
-  .history-chip:hover { border-color: var(--accent); color: var(--text); }
-
-  .highlight {
-    background: rgba(247,167,79,0.25);
-    color: var(--warn);
-    border-radius: 3px;
-    padding: 0 2px;
-    font-weight: 700;
-  }
-
-  @media (max-width: 480px) {
-    main { padding: 14px; }
-    .card { padding: 16px; }
-  }
+  @media (max-width: 480px) { main { padding: 14px; } .card { padding: 16px; } }
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">📦</div>
-  <div>
-    <h1>Fatura Arama</h1>
-    <p>Depo Referans Takip</p>
-  </div>
+  <div><h1>Fatura Arama</h1><p>Depo Referans Takip</p></div>
 </header>
-
 <main>
-  <!-- STEP 1: UPLOAD -->
-  <div class="card">
-    <div class="card-title">
-      <div class="step-badge">1</div>
-      Fatura Fotoğraflarını Yükle
-    </div>
 
+  <!-- API KEY -->
+  <div class="card" id="apikeyCard">
+    <div class="card-title">🔑 API Anahtarı</div>
+    <div class="apikey-box">
+      <input class="apikey-input" id="apikeyInput" type="password" placeholder="sk-ant-api03-..." autocomplete="off">
+      <button class="btn-save" onclick="saveApiKey()">Kaydet</button>
+    </div>
+    <div class="apikey-status" id="apikeyStatus"></div>
+    <div class="apikey-help">
+      API anahtarı nereden alınır?<br>
+      1. <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> adresine git<br>
+      2. Hesap aç (ücretsiz) → <b>API Keys</b> → <b>Create Key</b><br>
+      3. Kopyala ve buraya yapıştır<br>
+      <b>Not:</b> Anahtar cihazında saklanır, hiçbir yere gönderilmez.
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="card">
+    <div class="card-title"><div class="step-badge">1</div>Fatura Fotoğraflarını Yükle</div>
     <div class="upload-zone" id="uploadZone">
       <input type="file" id="fileInput" accept="image/*" multiple>
       <div class="upload-icon">📷</div>
       <p><strong>Fotoğraf seç</strong> veya buraya sürükle</p>
-      <p style="margin-top:4px; font-size:12px;">JPG, PNG — Birden fazla seçebilirsin</p>
+      <p style="margin-top:4px;font-size:12px;">Birden fazla seçebilirsin</p>
     </div>
-
     <div class="page-list" id="pageList"></div>
-
-    <button class="btn-primary" id="readAllBtn" disabled onclick="readAllPages()">
-      Faturaları Tara (OCR)
-    </button>
+    <button class="btn-primary" id="readAllBtn" disabled onclick="readAllPages()">Faturaları Tara (OCR)</button>
   </div>
 
-  <!-- STEP 2: SEARCH -->
+  <!-- SEARCH -->
   <div class="card">
-    <div class="card-title">
-      <div class="step-badge">2</div>
-      Referans Ara
-    </div>
-
+    <div class="card-title"><div class="step-badge">2</div>Referans Ara</div>
     <div id="searchEmptyState" class="empty-state">
       <div class="icon">🔍</div>
       <p>Önce fatura fotoğraflarını<br>yükleyip tara</p>
     </div>
-
     <div id="searchSection" style="display:none;">
       <div class="stats-bar" id="statsBar"></div>
-
       <div class="search-row">
-        <input
-          class="search-input"
-          id="searchInput"
-          type="text"
-          placeholder="Referans no gir..."
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-          oninput="onSearchInput()"
-          onkeydown="if(event.key==='Enter') doSearch()"
-        >
+        <input class="search-input" id="searchInput" type="text" placeholder="Referans no gir..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="onSearchInput()" onkeydown="if(event.key==='Enter') doSearch()">
         <button class="btn-search" onclick="doSearch()">🔍</button>
       </div>
-
       <div class="history-chips" id="historyChips"></div>
-
       <div id="resultBox"></div>
     </div>
   </div>
+
 </main>
-
 <script>
-// ─── STATE ───────────────────────────────────────────────────────────────────
-const pages = [];          // { file, dataUrl, name, status, lines, rawText }
+const pages = [];
 let searchHistory = [];
+let apiKey = localStorage.getItem('claude_api_key') || '';
 
-// ─── FILE INPUT ───────────────────────────────────────────────────────────────
+// API KEY
+window.onload = () => {
+  if (apiKey) {
+    document.getElementById('apikeyInput').value = apiKey;
+    document.getElementById('apikeyStatus').textContent = '✓ API anahtarı kayıtlı';
+    document.getElementById('apikeyStatus').className = 'apikey-status ok';
+  }
+};
+
+function saveApiKey() {
+  const val = document.getElementById('apikeyInput').value.trim();
+  if (!val.startsWith('sk-ant-')) {
+    document.getElementById('apikeyStatus').textContent = '⚠ Geçersiz anahtar. "sk-ant-" ile başlamalı.';
+    document.getElementById('apikeyStatus').className = 'apikey-status err';
+    return;
+  }
+  apiKey = val;
+  localStorage.setItem('claude_api_key', val);
+  document.getElementById('apikeyStatus').textContent = '✓ Kaydedildi!';
+  document.getElementById('apikeyStatus').className = 'apikey-status ok';
+}
+
+// FILE INPUT
 document.getElementById('fileInput').addEventListener('change', e => {
-  const files = Array.from(e.target.files);
-  files.forEach(addFile);
+  Array.from(e.target.files).forEach(addFile);
   e.target.value = '';
-});
-
-const zone = document.getElementById('uploadZone');
-zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
-zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-zone.addEventListener('drop', e => {
-  e.preventDefault(); zone.classList.remove('dragover');
-  Array.from(e.dataTransfer.files).forEach(addFile);
 });
 
 function addFile(file) {
   if (!file.type.startsWith('image/')) return;
   const reader = new FileReader();
   reader.onload = ev => {
-    const page = { file, dataUrl: ev.target.result, name: file.name, status: 'pending', lines: [], rawText: '' };
-    pages.push(page);
+    pages.push({ file, dataUrl: ev.target.result, name: file.name, status: 'pending', lines: [], rawText: '' });
     renderPageList();
     updateReadBtn();
   };
@@ -471,39 +204,37 @@ function removePage(idx) {
 
 function renderPageList() {
   const list = document.getElementById('pageList');
-  if (pages.length === 0) { list.innerHTML = ''; return; }
   list.innerHTML = pages.map((p, i) => `
     <div class="page-item">
-      <img class="page-thumb" src="${p.dataUrl}" alt="Sayfa ${i+1}">
+      <img class="page-thumb" src="${p.dataUrl}">
       <div class="page-info">
         <div class="name">Sayfa ${i+1} — ${p.name}</div>
         <div class="status">${statusLabel(p)}</div>
-        ${p.rawText ? `<div class="ocr-preview">${escHtml(p.rawText.substring(0,150))}...</div>` : ''}
+        ${p.rawText ? `<div class="ocr-preview">${escHtml(p.rawText.substring(0,120))}...</div>` : ''}
       </div>
       <div class="status-dot ${p.status}"></div>
       <button class="btn-remove" onclick="removePage(${i})">✕</button>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function statusLabel(p) {
   if (p.status === 'pending') return 'Bekliyor';
   if (p.status === 'reading') return '⏳ Okunuyor...';
-  if (p.status === 'done') return `✓ ${p.lines.length} satır bulundu`;
-  if (p.status === 'error') return '⚠ Okuma hatası';
+  if (p.status === 'done') return `✓ ${p.lines.length} satır okundu`;
+  if (p.status === 'error') return '⚠ Hata: ' + (p.errorMsg || 'Bilinmeyen hata');
   return '';
 }
 
 function updateReadBtn() {
-  const btn = document.getElementById('readAllBtn');
-  btn.disabled = pages.length === 0;
+  document.getElementById('readAllBtn').disabled = pages.length === 0;
 }
 
-// ─── OCR via Claude API ───────────────────────────────────────────────────────
+// OCR
 async function readAllPages() {
-  const pending = pages.filter(p => p.status === 'pending' || p.status === 'error');
-  if (pending.length === 0) return;
-
+  if (!apiKey) {
+    alert('Önce API anahtarını gir ve kaydet!');
+    return;
+  }
   const btn = document.getElementById('readAllBtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>Okunuyor...';
@@ -516,13 +247,14 @@ async function readAllPages() {
     try {
       const base64 = p.dataUrl.split(',')[1];
       const mediaType = p.file.type || 'image/jpeg';
-      const result = await callClaudeOCR(base64, mediaType, i + 1);
+      const result = await callClaudeOCR(base64, mediaType);
       p.lines = result.lines;
       p.rawText = result.rawText;
       p.status = 'done';
+      p.errorMsg = '';
     } catch(err) {
-      console.error(err);
       p.status = 'error';
+      p.errorMsg = err.message;
     }
     renderPageList();
   }
@@ -532,20 +264,15 @@ async function readAllPages() {
   updateSearchSection();
 }
 
-async function callClaudeOCR(base64Data, mediaType, pageNum) {
-  const prompt = `Bu fatura veya irsaliye görselindeki TÜM metni satır satır oku.
-
-Görevin:
-1. Görseldeki her satırı olduğu gibi yaz
-2. Özellikle ürün kodları, referans numaraları, stok kodları, barkodlar gibi alfanümerik değerlere dikkat et
-3. Boş satırları atla
-4. Her satırı yeni bir satıra yaz
-
-Sadece düz metin çıkar, yorum ekleme. Başlık veya açıklama yazma.`;
-
+async function callClaudeOCR(base64Data, mediaType) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-allow-browser': 'true'
+    },
     body: JSON.stringify({
       model: 'claude-sonnet-4-6',
       max_tokens: 1000,
@@ -553,142 +280,92 @@ Sadece düz metin çıkar, yorum ekleme. Başlık veya açıklama yazma.`;
         role: 'user',
         content: [
           { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
-          { type: 'text', text: prompt }
+          { type: 'text', text: 'Bu fatura görselindeki her satırı oku ve listele. Özellikle ürün kodları, referans numaraları ve stok kodlarına dikkat et. Her satırı yeni satıra yaz. Sadece düz metin, yorum ekleme.' }
         ]
       }]
     })
   });
 
-  if (!response.ok) throw new Error('API hatası: ' + response.status);
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || 'API Hatası: ' + response.status);
+  }
+
   const data = await response.json();
   const rawText = data.content.map(c => c.text || '').join('\n').trim();
   const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   return { rawText, lines };
 }
 
-// ─── SEARCH SECTION ───────────────────────────────────────────────────────────
+// SEARCH SECTION
 function updateSearchSection() {
-  const donePages = pages.filter(p => p.status === 'done');
-  const empty = document.getElementById('searchEmptyState');
-  const section = document.getElementById('searchSection');
-
-  if (donePages.length === 0) {
-    empty.style.display = '';
-    section.style.display = 'none';
-    return;
+  const done = pages.filter(p => p.status === 'done');
+  document.getElementById('searchEmptyState').style.display = done.length === 0 ? '' : 'none';
+  document.getElementById('searchSection').style.display = done.length === 0 ? 'none' : '';
+  if (done.length > 0) {
+    const totalLines = pages.reduce((s, p) => s + p.lines.length, 0);
+    document.getElementById('statsBar').innerHTML = `
+      <div class="stat-pill"><strong>${done.length}</strong> sayfa</div>
+      <div class="stat-pill"><strong>${totalLines}</strong> satır</div>`;
   }
-
-  empty.style.display = 'none';
-  section.style.display = '';
-
-  // Stats
-  const totalLines = pages.reduce((s, p) => s + p.lines.length, 0);
-  document.getElementById('statsBar').innerHTML = `
-    <div class="stat-pill"><strong>${donePages.length}</strong> sayfa</div>
-    <div class="stat-pill"><strong>${totalLines}</strong> satır</div>
-  `;
 }
 
 function onSearchInput() {
-  const val = document.getElementById('searchInput').value.trim();
-  if (!val) document.getElementById('resultBox').innerHTML = '';
+  if (!document.getElementById('searchInput').value.trim()) document.getElementById('resultBox').innerHTML = '';
 }
 
 function doSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if (!query) return;
-
   addHistory(query);
-  const results = searchInPages(query);
-  renderResults(query, results);
+  renderResults(query, searchInPages(query));
 }
 
 function searchInPages(query) {
   const q = query.toLowerCase();
   const results = [];
-
-  pages.forEach((page, pageIdx) => {
+  pages.forEach((page, pi) => {
     if (page.status !== 'done') return;
-    page.lines.forEach((line, lineIdx) => {
+    page.lines.forEach((line, li) => {
       if (line.toLowerCase().includes(q)) {
-        results.push({
-          pageNum: pageIdx + 1,
-          pageName: page.name,
-          lineNum: lineIdx + 1,
-          lineText: line,
-          totalLines: page.lines.length
-        });
+        results.push({ pageNum: pi+1, pageName: page.name, lineNum: li+1, lineText: line, totalLines: page.lines.length });
       }
     });
   });
-
   return results;
 }
 
 function renderResults(query, results) {
   const box = document.getElementById('resultBox');
-
   if (results.length === 0) {
-    box.innerHTML = `
-      <div class="result-notfound">
-        <div class="icon">❌</div>
-        <p><strong>"${escHtml(query)}"</strong> hiçbir sayfada bulunamadı</p>
-      </div>`;
+    box.innerHTML = `<div class="result-notfound"><span style="font-size:24px">❌</span><p><strong>"${escHtml(query)}"</strong> hiçbir sayfada bulunamadı</p></div>`;
     return;
   }
-
   const items = results.map(r => {
-    const highlighted = r.lineText.replace(
-      new RegExp(escRegex(query), 'gi'),
-      m => `<span class="highlight">${escHtml(m)}</span>`
-    );
-    return `
-      <div class="location-item">
-        <div class="location-badge">
-          <div class="page-num">Sayfa ${r.pageNum}</div>
-          <div class="line-num">${r.lineNum}.</div>
-          <div class="page-num">satır</div>
-        </div>
-        <div class="location-detail">
-          <div class="ref-text">${highlighted}</div>
-          <div class="context">${escHtml(r.pageName)} · Toplam ${r.totalLines} satır</div>
-        </div>
-      </div>`;
-  }).join('');
-
-  box.innerHTML = `
-    <div class="result-found">
-      <div class="result-header">
-        <div class="icon">✅</div>
-        <h3>${results.length} yerde bulundu</h3>
+    const hl = r.lineText.replace(new RegExp(escRegex(query), 'gi'), m => `<span class="highlight">${escHtml(m)}</span>`);
+    return `<div class="location-item">
+      <div class="location-badge">
+        <div class="page-num">Sayfa ${r.pageNum}</div>
+        <div class="line-num">${r.lineNum}.</div>
+        <div class="page-num">satır</div>
       </div>
-      <div class="result-locations">${items}</div>
+      <div class="location-detail">
+        <div class="ref-text">${hl}</div>
+        <div class="context">${escHtml(r.pageName)}</div>
+      </div>
     </div>`;
+  }).join('');
+  box.innerHTML = `<div class="result-found"><div class="result-header"><span style="font-size:24px">✅</span><h3>${results.length} yerde bulundu</h3></div><div class="result-locations">${items}</div></div>`;
 }
 
-// ─── HISTORY ──────────────────────────────────────────────────────────────────
 function addHistory(q) {
-  if (!searchHistory.includes(q)) {
-    searchHistory.unshift(q);
-    if (searchHistory.length > 8) searchHistory.pop();
-  }
-  renderHistory();
+  if (!searchHistory.includes(q)) { searchHistory.unshift(q); if (searchHistory.length > 8) searchHistory.pop(); }
+  document.getElementById('historyChips').innerHTML = searchHistory.map(h =>
+    `<div class="history-chip" onclick="document.getElementById('searchInput').value='${escHtml(h)}';doSearch();">${escHtml(h)}</div>`).join('');
 }
 
-function renderHistory() {
-  const c = document.getElementById('historyChips');
-  c.innerHTML = searchHistory.map(h => `
-    <div class="history-chip" onclick="document.getElementById('searchInput').value='${escHtml(h)}'; doSearch();">${escHtml(h)}</div>
-  `).join('');
-}
-
-// ─── UTILS ───────────────────────────────────────────────────────────────────
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escRegex(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 </script>
 </body>
 </html>
